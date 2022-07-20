@@ -19,7 +19,6 @@ class PhotoGalleryCache private constructor() {
 
     private val lru: LruCache<Any, Any> = LruCache(1500)
 
-    // Saving our bitmap to our cache
     fun saveBitmapToCache(key: String, bitmap: Bitmap) {
         try {
             instance.lru.put(key, bitmap)
@@ -29,7 +28,6 @@ class PhotoGalleryCache private constructor() {
         Log.i(TAG, "Got some images for you: $bitmap")
     }
 
-    // Retrieving our bitmap from our cache
     fun retrieveBitmapFromCache(key: String): Bitmap? {
         try {
             return instance.lru.get(key) as Bitmap?

@@ -1,6 +1,5 @@
 package com.wluo.flickrsearch.model
 
-import android.net.Uri
 import com.google.gson.annotations.SerializedName
 
 data class GalleryItem(var title: String = "",
@@ -9,12 +8,4 @@ data class GalleryItem(var title: String = "",
                        @SerializedName("owner") var owner: String = ""
 
 ) {
-    val photoPageUri: Uri
-        get() {
-            return Uri.parse("https://www.flickr.com/photos/")
-                .buildUpon()
-                .appendPath(owner)
-                .appendPath(id)
-                .build()
-        }
 }

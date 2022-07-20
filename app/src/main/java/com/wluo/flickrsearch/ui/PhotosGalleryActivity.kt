@@ -44,8 +44,8 @@ class PhotosGalleryActivity : AppCompatActivity() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (!binding.photoRecyclerView.canScrollVertically(1)) {
-                    //photoGalleryViewModel.page += 1
-                    //photoGalleryViewModel.fetchNewPage()
+                    photoGalleryViewModel.page += 1
+                    photoGalleryViewModel.fetchNewPage()
                 }
             }
         })
@@ -68,8 +68,7 @@ class PhotosGalleryActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.photo_gallery, menu)
+        menuInflater.inflate(R.menu.photo_gallery, menu)
 
         val searchItem : MenuItem = menu.findItem(R.id.menu_item_search)
         val searchView = searchItem.actionView as SearchView
@@ -78,8 +77,7 @@ class PhotosGalleryActivity : AppCompatActivity() {
             setOnQueryTextListener(object: SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(queryText: String): Boolean {
                     Log.d(TAG, "QueryTextSubmit: $queryText")
-                    //photoGalleryViewModel.page = 1
-                    //photoGalleryViewModel.queryText = queryText
+                    photoGalleryViewModel.page = 1
                     adapter.cleanList()
                     photoGalleryViewModel.fetchPhotos(queryText)
 

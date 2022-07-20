@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.wluo.flickrsearch.api.FlickrFetcher
 import com.wluo.flickrsearch.model.GalleryItem
 import com.wluo.flickrsearch.request.CancelRequestRepositoryClass
@@ -13,32 +12,34 @@ import com.wluo.flickrsearch.storage.QueryPreferences
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
     private val cancelRequestRepositoryClass = CancelRequestRepositoryClass()
     private val flickrFetchr = FlickrFetcher()
-    private val mutableSearchTerm = MutableLiveData<String>()
-    val searchTerm: String
-        get() = mutableSearchTerm.value ?: ""
-    var galleryItemLiveData: LiveData<ArrayList<GalleryItem>>
+    var page: Int = 1
+    var searchTerm: String = ""
+    private var mutableItemList: MutableLiveData<ArrayList<GalleryItem>> = flickrFetchr.responseLiveData
+    val galleryItemLiveData: LiveData<ArrayList<GalleryItem>>
+    get() = mutableItemList
 
     init {
-        mutableSearchTerm.value = QueryPreferences.getStoredQuery(app)
-
-        // What we added here will make the ImageResults of our GalleryItem to reflect the latest request or changes of our photoSearch
-        galleryItemLiveData =
-            Transformations.switchMap(mutableSearchTerm) { searchItem ->
-                // this will still update the user with photos even though the search_item has been cleared
-                if (searchItem.isBlank()) {
-                    flickrFetchr.fetchPhotos()
-                } else {
-                    flickrFetchr.searchPhotos(searchItem, 1)
-                }
-            }
+        fetchPhotos(QueryPreferences.getStoredQuery(app))
     }
 
     fun fetchPhotos(query: String = "") {
         QueryPreferences.setStoredQuery(app, query)
-        mutableSearchTerm.value = query
+        searchTerm = query
+        if (query.isBlank()) {
+            flickrFetchr.fetchPhotos(page)
+        } else {
+            flickrFetchr.searchPhotos(query, page)
+        }
     }
 
-    fun
+    fun fetchNewPage() {
+        val query = QueryPreferences.getStoredQuery(app)
+        if (query.isBlank()) {
+            flickrFetchr.fetchPhotos(page)
+        } else {
+            flickrFetchr.searchPhotos(query, page)
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()

@@ -22,7 +22,6 @@ class ThumbnailDownloader<in T>(
 )
     : HandlerThread(TAG) {
 
-    // Our fragment's lifecycleObserver
     val lifeCycleObserver: LifecycleObserver =
         object : LifecycleObserver {
 

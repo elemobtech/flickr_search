@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.wluo.flickrsearch.model.GalleryItem
@@ -24,23 +23,9 @@ class FlickrFetcher {
     val responseLiveData: MutableLiveData<ArrayList<GalleryItem>> = MutableLiveData()
     init {
         updateApi(1)
-        /*val client = OkHttpClient.Builder()
-            .addInterceptor(PhotoInterceptor())
-            .build()
-        val gsonDeserializer = GsonBuilder()
-            .registerTypeAdapter(PhotoResponse::class.java, PhotoDeserializer())
-            .create()
-        val gsonConverterFactory = GsonConverterFactory.create(gsonDeserializer)
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://api.flickr.com/")
-            .addConverterFactory(gsonConverterFactory)
-            .client(client)
-            .build()
-
-        flickrApi = retrofit.create(FlickrApi::class.java)*/
     }
 
-    fun updateApi(page: Int) {
+    private fun updateApi(page: Int) {
         val interceptor = PhotoInterceptor();
         interceptor.page = page
         val client = OkHttpClient.Builder()
@@ -59,25 +44,25 @@ class FlickrFetcher {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    fun fetchPhotosRequest(): Call<PhotoDeserializer> {
+    private fun fetchPhotosRequest(): Call<PhotoDeserializer> {
         return flickrApi.fetchPhotos()
     }
 
-    fun fetchPhotos(): LiveData<ArrayList<GalleryItem>> {
-        return fetchPhotoMetadata(fetchPhotosRequest())
+    fun fetchPhotos(page: Int) {
+        updateApi(page)
+        fetchPhotoMetadata(fetchPhotosRequest())
     }
 
-    fun searchPhotosRequest(query: String, page: Int): Call<PhotoDeserializer> {
+    private fun searchPhotosRequest(query: String, page: Int): Call<PhotoDeserializer> {
         updateApi(page)
         return flickrApi.searchPhotos(query)
     }
 
-    fun searchPhotos(query: String, page: Int): LiveData<ArrayList<GalleryItem>> {
-        return fetchPhotoMetadata(searchPhotosRequest(query, page))
+    fun searchPhotos(query: String, page: Int) {
+        fetchPhotoMetadata(searchPhotosRequest(query, page))
     }
 
-    private fun fetchPhotoMetadata(flickrRequest: Call<PhotoDeserializer>): LiveData<ArrayList<GalleryItem>> {
-        val responseLiveData: MutableLiveData<ArrayList<GalleryItem>> = MutableLiveData()
+    private fun fetchPhotoMetadata(flickrRequest: Call<PhotoDeserializer>) {
         flickrRequest.enqueue(object : Callback<PhotoDeserializer> {
             override fun onFailure(call: Call<PhotoDeserializer>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch photos", t)
@@ -85,8 +70,8 @@ class FlickrFetcher {
 
             override fun onResponse(
                 call: Call<PhotoDeserializer>,
-                response: Response<PhotoDeserializer>
-            ) {
+                response: Response<PhotoDeserializer>)
+            {
                 Log.d(TAG,"Response received $response")
                 val flickrResponse: PhotoDeserializer? = response.body()
                 val photoResponse: PhotoResponse? = flickrResponse?.photos
@@ -98,7 +83,6 @@ class FlickrFetcher {
                 responseLiveData.value = ArrayList(galleryItems)
             }
         })
-        return responseLiveData
     }
 
     @WorkerThread

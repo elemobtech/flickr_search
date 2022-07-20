@@ -46,7 +46,7 @@ class PhotoAdapter
         thumbDownloader.queueThumbnail(holder, galleryItem.url)
     }
 
-    inner class PhotoHolder(private val itemView: View)
+    inner class PhotoHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView) {
         private lateinit var galleryItem: GalleryItem
         private val imageView: ImageView = itemView.findViewById(R.id.image)
