@@ -50,8 +50,9 @@ class PhotoAdapter
         fun bindGalleryItem(item: GalleryItem) {
             galleryItem = item
             textView.text = galleryItem.title
+            val urlString = "https://live.staticflickr.com/${galleryItem.server}/${galleryItem.id}_${galleryItem.secret}_m.jpg"
             Glide.with(itemView)
-                .load(galleryItem.url)
+                .load(urlString)
                 .placeholder(R.drawable.placeholder)
                 .into(imageView)
         }

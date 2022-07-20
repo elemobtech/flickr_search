@@ -75,19 +75,13 @@ class FlickrFetcher {
                 Log.d(TAG,"Response received $response")
                 val flickrResponse: PhotoDeserializer? = response.body()
                 val photoResponse: PhotoResponse? = flickrResponse?.photos
-                var galleryItems: List<GalleryItem> = photoResponse?.galleryItems
+                val galleryItems: List<GalleryItem> = photoResponse?.galleryItems
                     ?: mutableListOf()
-                galleryItems = galleryItems.filterNot {
+                /*galleryItems = galleryItems.filterNot {
                     it.url.isBlank()
-                }
+                }*/
                 responseLiveData.value = ArrayList(galleryItems)
             }
         })
-    }
-
-    @WorkerThread
-    fun fetchPhoto(url: String): Bitmap? {
-        val response: Response<ResponseBody> = flickrApi.fetchUrlBytes(url).execute()
-        return response.body()?.byteStream()?.use(BitmapFactory::decodeStream)
     }
 }
