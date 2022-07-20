@@ -33,6 +33,11 @@ class PhotosGalleryActivity : AppCompatActivity() {
             MyViewModelFactory(QueryPreferences.getStoredQuery(applicationContext)))
             .get(PhotoGalleryViewModel::class.java)
 
+        binding.swipeContainer.setOnRefreshListener {
+            viewModel.page = 1
+            viewModel.fetchPhotos()
+        }
+
         binding.photoRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -45,6 +50,10 @@ class PhotosGalleryActivity : AppCompatActivity() {
 
         binding.photoRecyclerView.adapter = adapter
         viewModel.galleryItemLiveData.observe(this) { galleryItems: ArrayList<GalleryItem> ->
+            if (binding.swipeContainer.isRefreshing) {
+                binding.swipeContainer.isRefreshing = false
+                adapter.cleanList()
+            }
             adapter.setItemList(galleryItems)
             binding.photoRecyclerView.alpha = 1f
             binding.pBPhotos.visibility = View.GONE

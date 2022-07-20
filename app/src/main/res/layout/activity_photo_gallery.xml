@@ -8,13 +8,18 @@
         android:layout_height="match_parent"
         tools:context=".ui.PhotosGalleryActivity">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/photo_recycler_view"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:fadeScrollbars="true"
-            android:layout_margin="4dp"/>
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/photo_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="true"
+                android:layout_margin="4dp"/>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ProgressBar
             android:id="@+id/pBPhotos"
