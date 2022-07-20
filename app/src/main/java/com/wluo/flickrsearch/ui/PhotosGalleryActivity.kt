@@ -1,9 +1,7 @@
 package com.wluo.flickrsearch.ui
 
-import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -16,14 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wluo.flickrsearch.R
 import com.wluo.flickrsearch.databinding.ActivityPhotoGalleryBinding
 import com.wluo.flickrsearch.model.GalleryItem
-import com.wluo.flickrsearch.request.ThumbnailDownloader
 import com.wluo.flickrsearch.viewmodel.PhotoGalleryViewModel
 
 private const val TAG = "GalleryActivity"
 
 class PhotosGalleryActivity : AppCompatActivity() {
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
-    private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoAdapter.PhotoHolder>
     private lateinit var binding: ActivityPhotoGalleryBinding
     private val adapter:PhotoAdapter = PhotoAdapter()
 
@@ -32,13 +28,6 @@ class PhotosGalleryActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_photo_gallery)
         binding.photoRecyclerView.layoutManager = GridLayoutManager(this, 3)
         photoGalleryViewModel = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
-        val responseHandler = Handler()
-        thumbnailDownloader =
-            ThumbnailDownloader(responseHandler) { photoHolder, bitmap ->
-                val drawable = BitmapDrawable(resources, bitmap)
-                photoHolder.bindDrawable(drawable)
-            }
-        lifecycle.addObserver(thumbnailDownloader.lifeCycleObserver)
 
         binding.photoRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -51,20 +40,11 @@ class PhotosGalleryActivity : AppCompatActivity() {
         })
 
         binding.photoRecyclerView.adapter = adapter
-        adapter.thumbDownloader = thumbnailDownloader
         photoGalleryViewModel.galleryItemLiveData.observe(this) { galleryItems: ArrayList<GalleryItem> ->
             adapter.setItemList(galleryItems)
             binding.photoRecyclerView.alpha = 1f
             binding.pBPhotos.visibility = View.GONE
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycle.removeObserver(
-            thumbnailDownloader.lifeCycleObserver
-        )
-        thumbnailDownloader.clearQueue()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

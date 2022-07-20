@@ -6,11 +6,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wluo.flickrsearch.api.FlickrFetcher
 import com.wluo.flickrsearch.model.GalleryItem
-import com.wluo.flickrsearch.request.CancelRequestRepositoryClass
+import com.wluo.flickrsearch.request.CancelRequestRepository
 import com.wluo.flickrsearch.storage.QueryPreferences
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
-    private val cancelRequestRepositoryClass = CancelRequestRepositoryClass()
+    private val cancelRequestRepositoryClass = CancelRequestRepository()
     private val flickrFetchr = FlickrFetcher()
     var page: Int = 1
     var searchTerm: String = ""

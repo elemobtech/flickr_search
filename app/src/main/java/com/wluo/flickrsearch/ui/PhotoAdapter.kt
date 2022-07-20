@@ -1,6 +1,5 @@
 package com.wluo.flickrsearch.ui
 
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.wluo.flickrsearch.R
 import com.wluo.flickrsearch.model.GalleryItem
-import com.wluo.flickrsearch.request.ThumbnailDownloader
 
 class PhotoAdapter
     : RecyclerView.Adapter<PhotoAdapter.PhotoHolder>() {
-    lateinit var thumbDownloader: ThumbnailDownloader<PhotoHolder>
     private var galleryItems: ArrayList<GalleryItem> = ArrayList()
 
     fun setItemList(itemList: ArrayList<GalleryItem>) {
@@ -42,8 +39,6 @@ class PhotoAdapter
         val galleryItem = galleryItems[position]
 
         holder.bindGalleryItem(galleryItem)
-
-        thumbDownloader.queueThumbnail(holder, galleryItem.url)
     }
 
     inner class PhotoHolder(itemView: View)
@@ -51,7 +46,6 @@ class PhotoAdapter
         private lateinit var galleryItem: GalleryItem
         private val imageView: ImageView = itemView.findViewById(R.id.image)
         private val textView: TextView = itemView.findViewById(R.id.title)
-        val bindDrawable: (Drawable) -> Unit = imageView::setImageDrawable
 
         fun bindGalleryItem(item: GalleryItem) {
             galleryItem = item
