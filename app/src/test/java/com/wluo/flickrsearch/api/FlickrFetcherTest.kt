@@ -1,4 +1,4 @@
-package com.wluo.flickrsearch.viewmodel
+package com.wluo.flickrsearch.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.wluo.flickrsearch.MockResponseFileReader
@@ -6,45 +6,37 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilNotNull
-import org.junit.*
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.TestRule
-import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnitRunner
 import java.net.HttpURLConnection
 
-@RunWith(MockitoJUnitRunner::class)
-class PhotoGalleryViewModelTest {
+class FlickrFetcherTest{
     @get:Rule
     val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var viewModel: PhotoGalleryViewModel
+    private lateinit var flickrFetcher: FlickrFetcher
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-
         mockWebServer = MockWebServer()
         mockWebServer.start()
-
-        viewModel = PhotoGalleryViewModel("melbourne", mockWebServer.url("").toString())
+        flickrFetcher = FlickrFetcher(mockWebServer.url("").toString())
     }
 
     @Test
-    fun `read sample success json file`(){
-        val reader = MockResponseFileReader("success_response.json")
-        Assert.assertNotNull(reader.content)
-    }
-
-    @Test
-    fun `fetch details and check content returned`(){
+    fun `fetch list and check data returned`(){
         val response = MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_OK)
             .setBody(MockResponseFileReader("success_response.json").content)
         mockWebServer.enqueue(response)
-        viewModel.fetchPhotos()
-        await untilNotNull {viewModel.galleryItemLiveData.value}
-        assert(viewModel.galleryItemLiveData.value?.size ?: false == 10)
+        flickrFetcher.fetchPhotos(1)
+        await untilNotNull {flickrFetcher.responseLiveData.value}
+        assert(flickrFetcher.responseLiveData.value?.size ?: false == 10)
     }
 
     @After

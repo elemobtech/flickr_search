@@ -21,7 +21,7 @@ import com.wluo.flickrsearch.viewmodel.PhotoGalleryViewModel
 private const val TAG = "GalleryActivity"
 
 class PhotosGalleryActivity : AppCompatActivity() {
-    private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
+    private lateinit var viewModel: PhotoGalleryViewModel
     private lateinit var binding: ActivityPhotoGalleryBinding
     private val adapter:PhotoAdapter = PhotoAdapter()
 
@@ -29,7 +29,7 @@ class PhotosGalleryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_photo_gallery)
         binding.photoRecyclerView.layoutManager = GridLayoutManager(this, 3)
-        photoGalleryViewModel = ViewModelProvider(this,
+        viewModel = ViewModelProvider(this,
             MyViewModelFactory(QueryPreferences.getStoredQuery(applicationContext)))
             .get(PhotoGalleryViewModel::class.java)
 
@@ -37,14 +37,14 @@ class PhotosGalleryActivity : AppCompatActivity() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (!binding.photoRecyclerView.canScrollVertically(1)) {
-                    photoGalleryViewModel.page += 1
-                    photoGalleryViewModel.fetchNewPage()
+                    viewModel.page += 1
+                    viewModel.fetchNewPage()
                 }
             }
         })
 
         binding.photoRecyclerView.adapter = adapter
-        photoGalleryViewModel.galleryItemLiveData.observe(this) { galleryItems: ArrayList<GalleryItem> ->
+        viewModel.galleryItemLiveData.observe(this) { galleryItems: ArrayList<GalleryItem> ->
             adapter.setItemList(galleryItems)
             binding.photoRecyclerView.alpha = 1f
             binding.pBPhotos.visibility = View.GONE
@@ -61,11 +61,11 @@ class PhotosGalleryActivity : AppCompatActivity() {
             setOnQueryTextListener(object: SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(queryText: String): Boolean {
                     Log.d(TAG, "QueryTextSubmit: $queryText")
-                    photoGalleryViewModel.page = 1
-                    photoGalleryViewModel.queryText = queryText
+                    viewModel.page = 1
+                    viewModel.queryText = queryText
                     QueryPreferences.setStoredQuery(applicationContext, queryText)
                     adapter.cleanList()
-                    photoGalleryViewModel.fetchPhotos()
+                    viewModel.fetchPhotos()
 
                     searchView.onActionViewCollapsed()
 
@@ -81,7 +81,7 @@ class PhotosGalleryActivity : AppCompatActivity() {
             })
 
             setOnSearchClickListener {
-                searchView.setQuery(photoGalleryViewModel.queryText, false)
+                searchView.setQuery(viewModel.queryText, false)
             }
         }
 

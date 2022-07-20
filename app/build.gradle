@@ -59,9 +59,9 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "android.arch.core:core-testing:1.1.1"
-    testImplementation "com.squareup.okhttp3:mockwebserver:4.1.0"
-    testImplementation "io.mockk:mockk:1.9.3"
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.0"
     testImplementation "org.mockito:mockito-core:3.3.3"
     testImplementation "androidx.test.ext:truth:1.4.0"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0"
+    testImplementation 'org.awaitility:awaitility-kotlin:4.2.0'
 }

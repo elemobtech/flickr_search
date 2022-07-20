@@ -1,6 +1,5 @@
 package com.wluo.flickrsearch.api
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.wluo.flickrsearch.model.GalleryItem
@@ -14,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 private const val TAG = "FlickrFetcher"
 
-class FlickrFetcher {
+class FlickrFetcher(private val urlString: String) {
     private lateinit var flickrApi: FlickrApi
     val responseLiveData: MutableLiveData<ArrayList<GalleryItem>> = MutableLiveData()
     init {
@@ -32,7 +31,7 @@ class FlickrFetcher {
             .create()
         val gsonConverterFactory = GsonConverterFactory.create(gsonDeserializer)
         val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://api.flickr.com/")
+            .baseUrl(urlString)
             .addConverterFactory(gsonConverterFactory)
             .client(client)
             .build()
@@ -61,14 +60,12 @@ class FlickrFetcher {
     private fun fetchPhotoMetadata(flickrRequest: Call<PhotoDeserializer>) {
         flickrRequest.enqueue(object : Callback<PhotoDeserializer> {
             override fun onFailure(call: Call<PhotoDeserializer>, t: Throwable) {
-                Log.e(TAG, "Failed to fetch photos", t)
             }
 
             override fun onResponse(
                 call: Call<PhotoDeserializer>,
                 response: Response<PhotoDeserializer>)
             {
-                Log.d(TAG,"Response received $response")
                 val flickrResponse: PhotoDeserializer? = response.body()
                 val photoResponse: PhotoResponse? = flickrResponse?.photos
                 val galleryItems: List<GalleryItem> = photoResponse?.galleryItems

@@ -1,11 +1,10 @@
 package com.wluo.flickrsearch.model
 
 import com.google.common.truth.Truth
-import com.wluo.flickrsearch.BaseUnitTest
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
-class GalleryItemTest: BaseUnitTest() {
+class GalleryItemTest {
     @Test
     fun constructor() = runBlocking {
         val model = GalleryItem(
