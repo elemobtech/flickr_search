@@ -10,7 +10,7 @@ data class GalleryItem(
     @ColumnInfo(name = "secret")
     @SerializedName("secret") val secret: String,
     @ColumnInfo(name = "server")
-    @SerializedName("server") val server: Int,
+    @SerializedName("server") val server: String,
     @ColumnInfo(name = "farm")
     @SerializedName("farm") val farm: Int,
     @ColumnInfo(name = "title")

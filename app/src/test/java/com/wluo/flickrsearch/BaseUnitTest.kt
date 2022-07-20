@@ -11,7 +11,7 @@ import java.io.File
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class BaseUnitTest {
+open class BaseUnitTest {
     lateinit var mMockServerInstance: MockWebServer
     private var mShouldStart = false
 

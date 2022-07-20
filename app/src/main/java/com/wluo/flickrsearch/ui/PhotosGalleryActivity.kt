@@ -8,12 +8,14 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wluo.flickrsearch.R
 import com.wluo.flickrsearch.databinding.ActivityPhotoGalleryBinding
 import com.wluo.flickrsearch.model.GalleryItem
+import com.wluo.flickrsearch.storage.QueryPreferences
 import com.wluo.flickrsearch.viewmodel.PhotoGalleryViewModel
 
 private const val TAG = "GalleryActivity"
@@ -27,7 +29,9 @@ class PhotosGalleryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_photo_gallery)
         binding.photoRecyclerView.layoutManager = GridLayoutManager(this, 3)
-        photoGalleryViewModel = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
+        photoGalleryViewModel = ViewModelProvider(this,
+            MyViewModelFactory(QueryPreferences.getStoredQuery(applicationContext)))
+            .get(PhotoGalleryViewModel::class.java)
 
         binding.photoRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -58,8 +62,10 @@ class PhotosGalleryActivity : AppCompatActivity() {
                 override fun onQueryTextSubmit(queryText: String): Boolean {
                     Log.d(TAG, "QueryTextSubmit: $queryText")
                     photoGalleryViewModel.page = 1
+                    photoGalleryViewModel.queryText = queryText
+                    QueryPreferences.setStoredQuery(applicationContext, queryText)
                     adapter.cleanList()
-                    photoGalleryViewModel.fetchPhotos(queryText)
+                    photoGalleryViewModel.fetchPhotos()
 
                     searchView.onActionViewCollapsed()
 
@@ -75,10 +81,18 @@ class PhotosGalleryActivity : AppCompatActivity() {
             })
 
             setOnSearchClickListener {
-                searchView.setQuery(photoGalleryViewModel.searchTerm, false)
+                searchView.setQuery(photoGalleryViewModel.queryText, false)
             }
         }
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    inner class MyViewModelFactory(
+        private val queryText: String
+    ): ViewModelProvider.NewInstanceFactory() {
+        override fun <T: ViewModel> create(modelClass:Class<T>): T {
+            return PhotoGalleryViewModel(queryText) as T
+        }
     }
 }

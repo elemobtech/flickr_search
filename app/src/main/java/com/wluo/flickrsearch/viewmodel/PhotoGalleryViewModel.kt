@@ -4,40 +4,37 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.wluo.flickrsearch.api.FlickrFetcher
 import com.wluo.flickrsearch.model.GalleryItem
 import com.wluo.flickrsearch.request.CancelRequestRepository
 import com.wluo.flickrsearch.storage.QueryPreferences
 
-class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
+class PhotoGalleryViewModel(var queryText: String): ViewModel() {
     private val cancelRequestRepositoryClass = CancelRequestRepository()
     private val flickrFetchr = FlickrFetcher()
     var page: Int = 1
-    var searchTerm: String = ""
     private var mutableItemList: MutableLiveData<ArrayList<GalleryItem>> = flickrFetchr.responseLiveData
     val galleryItemLiveData: LiveData<ArrayList<GalleryItem>>
     get() = mutableItemList
 
     init {
-        fetchPhotos(QueryPreferences.getStoredQuery(app))
+        fetchPhotos()
     }
 
-    fun fetchPhotos(query: String = "") {
-        QueryPreferences.setStoredQuery(app, query)
-        searchTerm = query
-        if (query.isBlank()) {
+    fun fetchPhotos() {
+        if (queryText.isBlank()) {
             flickrFetchr.fetchPhotos(page)
         } else {
-            flickrFetchr.searchPhotos(query, page)
+            flickrFetchr.searchPhotos(queryText, page)
         }
     }
 
     fun fetchNewPage() {
-        val query = QueryPreferences.getStoredQuery(app)
-        if (query.isBlank()) {
+        if (queryText.isBlank()) {
             flickrFetchr.fetchPhotos(page)
         } else {
-            flickrFetchr.searchPhotos(query, page)
+            flickrFetchr.searchPhotos(queryText, page)
         }
     }
 

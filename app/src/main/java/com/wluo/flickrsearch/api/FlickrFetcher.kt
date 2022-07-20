@@ -1,15 +1,11 @@
 package com.wluo.flickrsearch.api
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.wluo.flickrsearch.model.GalleryItem
 import com.wluo.flickrsearch.model.PhotoResponse
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -77,9 +73,6 @@ class FlickrFetcher {
                 val photoResponse: PhotoResponse? = flickrResponse?.photos
                 val galleryItems: List<GalleryItem> = photoResponse?.galleryItems
                     ?: mutableListOf()
-                /*galleryItems = galleryItems.filterNot {
-                    it.url.isBlank()
-                }*/
                 responseLiveData.value = ArrayList(galleryItems)
             }
         })
